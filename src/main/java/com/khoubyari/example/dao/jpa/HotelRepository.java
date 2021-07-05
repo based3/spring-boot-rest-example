@@ -6,7 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 /**
- * Repository can be used to delegate CRUD operations against the data source: http://goo.gl/P1J8QH
+ * Spring Data Repository used to delegate CRUD operations against the data source:
+ * https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#data.sql.jpa-and-spring-data
  */
 public interface HotelRepository extends PagingAndSortingRepository<Hotel, Long> {
     Hotel findHotelByCity(String city);

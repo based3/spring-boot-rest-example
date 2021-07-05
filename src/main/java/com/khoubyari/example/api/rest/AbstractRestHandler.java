@@ -16,7 +16,7 @@ import org.springframework.web.context.request.WebRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * This class is meant to be extended by all REST resource "controllers".
+ * Extensible based class for REST resource "controllers".
  * It contains exception mapping and other common REST API functionality
  */
 //@ControllerAdvice?
@@ -35,7 +35,7 @@ public abstract class AbstractRestHandler implements ApplicationEventPublisherAw
     RestErrorInfo handleDataStoreException(DataFormatException ex, WebRequest request, HttpServletResponse response) {
         log.info("Converting Data Store exception to RestResponse : " + ex.getMessage());
 
-        return new RestErrorInfo(ex, "You messed up.");
+        return new RestErrorInfo(ex, "Data format error.");
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -45,7 +45,7 @@ public abstract class AbstractRestHandler implements ApplicationEventPublisherAw
     RestErrorInfo handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request, HttpServletResponse response) {
         log.info("ResourceNotFoundException handler:" + ex.getMessage());
 
-        return new RestErrorInfo(ex, "Sorry I couldn't find it.");
+        return new RestErrorInfo(ex, "Resource not found.");
     }
 
     @Override
@@ -53,7 +53,7 @@ public abstract class AbstractRestHandler implements ApplicationEventPublisherAw
         this.eventPublisher = applicationEventPublisher;
     }
 
-    //todo: replace with exception mapping
+    // TODO Replace with exception mapping
     public static <T> T checkResourceFound(final T resource) {
         if (resource == null) {
             throw new ResourceNotFoundException("resource not found");

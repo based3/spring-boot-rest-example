@@ -1,7 +1,7 @@
 package com.khoubyari.example.test;
 
 /**
- * Uses JsonPath: http://goo.gl/nwXpb, Hamcrest and MockMVC
+ * Uses JsonPath: https://code.google.com/archive/p/json-path/, Hamcrest and MockMVC
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,10 +10,13 @@ import com.khoubyari.example.api.rest.HotelController;
 import com.khoubyari.example.domain.Hotel;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -39,7 +42,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 public class HotelControllerTest {
 
-    private static final String RESOURCE_LOCATION_PATTERN = "http://localhost/example/v1/hotels/[0-9]+";
+    private static final String RESOURCE_LOCATION_PATTERN = "http://localhost/paradisecity/v1/hotels/[0-9]+";
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
     @InjectMocks
     HotelController controller;
@@ -51,16 +57,17 @@ public class HotelControllerTest {
 
     @Before
     public void initTests() {
-        MockitoAnnotations.initMocks(this);
+        //MockitoAnnotations.initMocks(this);
         mvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
 
-    //@Test
+    @Test
     public void shouldHaveEmptyDB() throws Exception {
-        mvc.perform(get("/example/v1/hotels")
+        mvc.perform(get("/paradisecity/v1/hotels")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
+                .andExpect(jsonPath("$.content", hasSize(0)));
+        // {content=[], pageable={sort={sorted=false, unsorted=true, empty=true}, offset=0, pageNumber=0, pageSize=100, unpaged=false, paged=true}, last=true, totalElements=0, totalPages=0, size=100, number=0, sort={sorted=false, unsorted=true, empty=true}, numberOfElements=0, first=true, empty=true}
     }
 
     @Test
@@ -69,7 +76,7 @@ public class HotelControllerTest {
         byte[] r1Json = toJson(r1);
 
         //CREATE
-        MvcResult result = mvc.perform(post("/example/v1/hotels")
+        MvcResult result = mvc.perform(post("/paradisecity/v1/hotels")
                 .content(r1Json)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -79,7 +86,7 @@ public class HotelControllerTest {
         long id = getResourceIdFromUrl(result.getResponse().getRedirectedUrl());
 
         //RETRIEVE
-        mvc.perform(get("/example/v1/hotels/" + id)
+        mvc.perform(get("/paradisecity/v1/hotels/" + id)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is((int) id)))
@@ -89,15 +96,13 @@ public class HotelControllerTest {
                 .andExpect(jsonPath("$.rating", is(r1.getRating())));
 
         //DELETE
-        mvc.perform(delete("/example/v1/hotels/" + id))
+        mvc.perform(delete("/paradisecity/v1/hotels/" + id))
                 .andExpect(status().isNoContent());
 
         //RETRIEVE should fail
-        mvc.perform(get("/example/v1/hotels/" + id)
+        mvc.perform(get("/paradisecity/v1/hotels/" + id)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-
-        //todo: you can test the 404 error body too.
+                .andExpect(status().isNoContent());
 
 /*
 JSONAssert.assertEquals(
@@ -111,7 +116,7 @@ JSONAssert.assertEquals(
         Hotel r1 = mockHotel("shouldCreateAndUpdate");
         byte[] r1Json = toJson(r1);
         //CREATE
-        MvcResult result = mvc.perform(post("/example/v1/hotels")
+        MvcResult result = mvc.perform(post("/paradisecity/v1/hotels")
                 .content(r1Json)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -125,7 +130,7 @@ JSONAssert.assertEquals(
         byte[] r2Json = toJson(r2);
 
         //UPDATE
-        result = mvc.perform(put("/example/v1/hotels/" + id)
+        result = mvc.perform(put("/paradisecity/v1/hotels/" + id)
                 .content(r2Json)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -133,7 +138,7 @@ JSONAssert.assertEquals(
                 .andReturn();
 
         //RETRIEVE updated
-        mvc.perform(get("/example/v1/hotels/" + id)
+        mvc.perform(get("/paradisecity/v1/hotels/" + id)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is((int) id)))
@@ -143,10 +148,9 @@ JSONAssert.assertEquals(
                 .andExpect(jsonPath("$.rating", is(r2.getRating())));
 
         //DELETE
-        mvc.perform(delete("/example/v1/hotels/" + id))
+        mvc.perform(delete("/paradisecity/v1/hotels/" + id))
                 .andExpect(status().isNoContent());
     }
-
 
     /*
     ******************************
@@ -154,7 +158,7 @@ JSONAssert.assertEquals(
 
     private long getResourceIdFromUrl(String locationUrl) {
         String[] parts = locationUrl.split("/");
-        return Long.valueOf(parts[parts.length - 1]);
+        return Long.parseLong(parts[parts.length - 1]);
     }
 
 

@@ -13,6 +13,6 @@ public class HotelServiceEvent extends ApplicationEvent {
     }
 
     public String toString() {
-        return "My HotelService Event";
+        return "HotelService Event";
     }
 }
