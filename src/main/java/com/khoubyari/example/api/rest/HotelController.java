@@ -17,12 +17,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /*
- * Demonstrates how to set up RESTful API endpoints using Spring MVC. /paradisecity/v1/hotels
+ * Demonstrates how to set up RESTful API endpoints using Spring MVC. /api/v1/hotels
  * https://restfulapi.net/
  */
 
 @RestController
-@RequestMapping(value="/paradisecity/v1/hotels")
+@RequestMapping(value="/api/v1/hotels")
 @Api(tags = {"hotels"})
 public class HotelController extends AbstractRestHandler {
 
@@ -37,7 +37,7 @@ public class HotelController extends AbstractRestHandler {
     public void createHotel(@RequestBody Hotel hotel,
                                  HttpServletRequest request, HttpServletResponse response) {
         Hotel createdHotel = this.hotelService.createHotel(hotel);
-        response.setHeader("Location", request.getRequestURL().append("/").append(createdHotel.getId()).toString());
+        response.setHeader("Location", request.getRequestURL().append(createdHotel.getId()).toString());
     }
 
     @RequestMapping(value="", method = RequestMethod.GET,
@@ -53,7 +53,7 @@ public class HotelController extends AbstractRestHandler {
         return this.hotelService.getAllHotels(page, size);
     }
 
-    @RequestMapping(value="/{id}", method = RequestMethod.GET,
+    @RequestMapping(value="{id}", method = RequestMethod.GET,
             produces = {"application/json", "application/xml"})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value="Get a single hotel.", notes="You have to provide a valid hotel ID.")
@@ -73,7 +73,7 @@ public class HotelController extends AbstractRestHandler {
                 .orElseThrow(() -> new BookNotFoundException(id));
     }*/
 
-    @RequestMapping(value="/{id}", method=RequestMethod.PUT,
+    @RequestMapping(value="{id}", method=RequestMethod.PUT,
             consumes = {"application/json", "application/xml"},
             produces = {"application/json", "application/xml"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -87,7 +87,7 @@ public class HotelController extends AbstractRestHandler {
     }
 
     //todo: @ApiImplicitParams, @ApiResponses
-    @RequestMapping(value="/{id}",
+    @RequestMapping(value="{id}",
             method = RequestMethod.DELETE,
             produces = {"application/json", "application/xml"})
     @ResponseStatus(HttpStatus.NO_CONTENT)

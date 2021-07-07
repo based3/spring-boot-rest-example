@@ -31,6 +31,8 @@ https://speakerdeck.com/michaelsimons/micrometer-new-insights-into-your-spring-b
 
 https://springdoc.org/migrating-from-springfox.html
 
+https://www.javacodemonk.com/migrating-spring-boot-tests-from-junit-4-to-junit-5-00aa2839
+
 # H2 database UI
 
 http://localhost:8080/h2-console/

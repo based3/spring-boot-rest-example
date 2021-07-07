@@ -10,12 +10,12 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.annotation.Priority;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
+/* Manage REST Services exception.
+ */
 @ControllerAdvice
 public class RestControllerAdvice extends ResponseEntityExceptionHandler {
     protected final Logger LOGGER = LoggerFactory.getLogger(RestControllerAdvice.class);

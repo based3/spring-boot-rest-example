@@ -1,4 +1,4 @@
-package com.khoubyari.example.test;
+package com.khoubyari.api;
 
 /**
  * Uses JsonPath: https://code.google.com/archive/p/json-path/, Hamcrest and MockMVC
@@ -14,9 +14,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -28,6 +29,7 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.regex.Pattern;
 
@@ -42,7 +44,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 public class HotelControllerTest {
 
-    private static final String RESOURCE_LOCATION_PATTERN = "http://localhost/paradisecity/v1/hotels/[0-9]+";
+    public final static Logger LOG = LoggerFactory.getLogger(HotelControllerTest.class);
+
+    private static final String API_PATH = "/api/v1/hotels/";
+    private static final String RESOURCE_LOCATION_PATTERN = "http://localhost" + API_PATH + "[0-9]+";
 
     @Rule
     public MockitoRule rule = MockitoJUnit.rule();
@@ -63,7 +68,7 @@ public class HotelControllerTest {
 
     @Test
     public void shouldHaveEmptyDB() throws Exception {
-        mvc.perform(get("/paradisecity/v1/hotels")
+        mvc.perform(get(API_PATH)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(0)));
@@ -76,7 +81,7 @@ public class HotelControllerTest {
         byte[] r1Json = toJson(r1);
 
         //CREATE
-        MvcResult result = mvc.perform(post("/paradisecity/v1/hotels")
+        MvcResult result = mvc.perform(post(API_PATH)
                 .content(r1Json)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -86,7 +91,7 @@ public class HotelControllerTest {
         long id = getResourceIdFromUrl(result.getResponse().getRedirectedUrl());
 
         //RETRIEVE
-        mvc.perform(get("/paradisecity/v1/hotels/" + id)
+        mvc.perform(get(API_PATH + id)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is((int) id)))
@@ -96,14 +101,14 @@ public class HotelControllerTest {
                 .andExpect(jsonPath("$.rating", is(r1.getRating())));
 
         //DELETE
-        mvc.perform(delete("/paradisecity/v1/hotels/" + id))
+        mvc.perform(delete(API_PATH + id))
                 .andExpect(status().isNoContent());
 
         //RETRIEVE should fail
-        mvc.perform(get("/paradisecity/v1/hotels/" + id)
+        mvc.perform(get(API_PATH + id)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
-
+                .andExpect(status().isNotFound()); // 404
+   // isNoContent() 204
 /*
 JSONAssert.assertEquals(
   "{foo: 'bar', baz: 'qux'}",
@@ -116,7 +121,7 @@ JSONAssert.assertEquals(
         Hotel r1 = mockHotel("shouldCreateAndUpdate");
         byte[] r1Json = toJson(r1);
         //CREATE
-        MvcResult result = mvc.perform(post("/paradisecity/v1/hotels")
+        MvcResult result = mvc.perform(post(API_PATH)
                 .content(r1Json)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -130,7 +135,7 @@ JSONAssert.assertEquals(
         byte[] r2Json = toJson(r2);
 
         //UPDATE
-        result = mvc.perform(put("/paradisecity/v1/hotels/" + id)
+        result = mvc.perform(put(API_PATH + id)
                 .content(r2Json)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -138,7 +143,7 @@ JSONAssert.assertEquals(
                 .andReturn();
 
         //RETRIEVE updated
-        mvc.perform(get("/paradisecity/v1/hotels/" + id)
+        mvc.perform(get(API_PATH + id)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is((int) id)))
@@ -148,7 +153,7 @@ JSONAssert.assertEquals(
                 .andExpect(jsonPath("$.rating", is(r2.getRating())));
 
         //DELETE
-        mvc.perform(delete("/paradisecity/v1/hotels/" + id))
+        mvc.perform(delete(API_PATH + id))
                 .andExpect(status().isNoContent());
     }
 
@@ -178,11 +183,11 @@ JSONAssert.assertEquals(
 
     // match redirect header URL (aka Location header)
     private static ResultMatcher redirectedUrlPattern(final String expectedUrlPattern) {
-        return new ResultMatcher() {
-            public void match(MvcResult result) {
-                Pattern pattern = Pattern.compile("\\A" + expectedUrlPattern + "\\z");
-                assertTrue(pattern.matcher(result.getResponse().getRedirectedUrl()).find());
-            }
+        return result -> {
+            Pattern pattern = Pattern.compile("\\A" + expectedUrlPattern + "\\z");
+            String urlPattern = Objects.requireNonNull(result.getResponse().getRedirectedUrl());
+            LOG.info("### urlPattern: " + urlPattern);
+            assertTrue(pattern.matcher(urlPattern).find());
         };
     }
 
