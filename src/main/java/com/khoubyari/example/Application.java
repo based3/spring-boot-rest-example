@@ -20,16 +20,18 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories("com.khoubyari.example.dao.jpa") // JPA repository
 public class Application extends SpringBootServletInitializer {
 
-    private static final Class<Application> applicationClass = Application.class;
+    private static final Class<Application> APPLICATION_CLASS = Application.class;
    // private static final Logger LOGGER = LoggerFactory.getLogger(applicationClass);
 
 	public static void main(String[] args) {
-		SpringApplication.run(applicationClass, args);
+		SpringApplication.run(APPLICATION_CLASS, args);
+        //SpringApplication.run(SpringBootSecuritySimpleApplication.class, args);
 	}
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(applicationClass);
+        return application.sources(APPLICATION_CLASS);
+
     }
 
 }

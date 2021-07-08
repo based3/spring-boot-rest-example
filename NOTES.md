@@ -41,6 +41,36 @@ spring.h2.console.enabled=true
 # Test spring mock
 https://stackoverflow.com/questions/29587958/how-to-treat-controller-exception-with-mockmvc
 
+# junit 4 to junit 5
+https://www.baeldung.com/junit-5-migration
+https://www.baeldung.com/spring-webappconfiguration
+https://developer.okta.com/blog/2019/03/28/test-java-spring-boot-junit5
+
+https://www.yawintutor.com/using-generated-security-password-spring-boot/
+1)
+spring.security.user.name = username
+spring.security.user.password = password
+2)
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration
+SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
+public class SpringBootSecuritySimpleApplication {
+public static void main(String[] args) {
+SpringApplication.run(SpringBootSecuritySimpleApplication.class, args);
+}
+}
+3)
+@Configuration
+public class SpringBootSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+	@Override
+	public void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.inMemoryAuthentication()
+			.withUser("user").password("{noop}password").roles("USER");
+	}
+}
+
+
+
 # Tests with Karate
 https://github.com/intuit/karate
 
@@ -49,5 +79,10 @@ Caused by: java.lang.NoSuchMethodError: com.sun.tools.javac.util.JavacMessages.a
 at com.google.errorprone.BaseErrorProneJavaCompiler.setupMessageBundle(BaseErrorProneJavaCompiler.java:209)
 
 https://github.com/google/error-prone/issues/535
+
+
+# Check
+http://localhost:8090/actuator
+
 
 

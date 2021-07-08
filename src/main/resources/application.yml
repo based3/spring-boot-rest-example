@@ -22,6 +22,16 @@ management:
   port: 8091
   security:
     enabled: false # management port is internal only. no need to secure it.
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+# https://stackoverflow.com/questions/23894010/spring-boot-security-disable-security
+spring:
+  autoconfigure:
+    exclude[0]: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+    exclude[1]: org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
 
 #default project info followed by actual injected pom-specified values.
 project:

@@ -62,7 +62,7 @@ public class HotelController extends AbstractRestHandler {
                              @PathVariable("id") Long id,
                              HttpServletRequest request, HttpServletResponse response) {
         Hotel hotel = this.hotelService.getHotel(id);
-        checkResourceFound(hotel);
+        exists(hotel);
         // TODO https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#actuator.auditing
         return hotel;
     }
@@ -81,7 +81,7 @@ public class HotelController extends AbstractRestHandler {
     public void updateHotel(@ApiParam(value="The ID of the existing hotel resource.", required = true)
                                  @PathVariable("id") Long id, @RequestBody Hotel hotel,
                                  HttpServletRequest request, HttpServletResponse response) {
-        checkResourceFound(this.hotelService.getHotel(id));
+        exists(this.hotelService.getHotel(id));
         if (id != hotel.getId()) throw new DataFormatException("ID doesn't match!");
         this.hotelService.updateHotel(hotel);
     }
@@ -95,7 +95,7 @@ public class HotelController extends AbstractRestHandler {
     public void deleteHotel(@ApiParam(value="The ID of the existing hotel resource.", required=true)
                                  @PathVariable("id") Long id, HttpServletRequest request,
                                  HttpServletResponse response) {
-        checkResourceFound(this.hotelService.getHotel(id));
+        exists(this.hotelService.getHotel(id));
         this.hotelService.deleteHotel(id);
     }
 }

@@ -1,9 +1,10 @@
 package com.khoubyari.api;
 
-import com.intuit.karate.junit4.Karate;
-//import com.intuit.karate.junit5.Karate
-import org.junit.runner.RunWith;
+import com.intuit.karate.junit5.Karate;
 
-@RunWith(Karate.class)
 public class KarateRunner {
+    @Karate.Test
+    Karate testSample() {
+        return Karate.run("com.khoubyari.api").relativeTo(getClass());
+    }
 }

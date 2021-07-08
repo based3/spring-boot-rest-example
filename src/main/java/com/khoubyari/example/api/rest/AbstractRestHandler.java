@@ -51,7 +51,7 @@ public abstract class AbstractRestHandler implements ApplicationEventPublisherAw
     }
 
     // TODO Replace with exception mapping
-    public static <T> T checkResourceFound(final T resource) {
+    public static <T> T exists(final T resource) {
         if (resource == null) {
             throw new ResourceNotFoundException("resource not found");
         }
